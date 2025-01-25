@@ -9,4 +9,12 @@ const api = axios.create({
   },
 });
 
+export const fetchTransactionCategories = async () => {
+  const response = await fetch(`${API_BASE_URL}/transactions/categories`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch transaction categories');
+  }
+  return response.json();
+};
+
 export default api;
