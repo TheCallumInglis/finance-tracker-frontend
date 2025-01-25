@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Button, MenuItem, Stack, CircularProgress } from '@mui/material';
 import dayjs from 'dayjs';
 import { useTransactionCategories } from '../hooks/useTransactionCategories';
+import { useAccounts } from '../hooks/useAccounts';
 
 const TransactionForm: React.FC = () => {
-  const { categories, loading, error } = useTransactionCategories();
+  const { categories, loading: categoriesLoading, error: categoriesError } = useTransactionCategories();
+  const { accounts, defaultAccount, loading: accountsLoading, error: accountsError } = useAccounts();
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     date: dayjs().format('YYYY-MM-DD'),
+    account: defaultAccount ? defaultAccount.id : '',
     amount: '',
     merchant: '',
     category: '',
     description: '',
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+
+  useEffect(() => {
+    if (defaultAccount) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        account: defaultAccount.id.toString(),
+      }));
+    }
+  }, [defaultAccount]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -36,7 +50,7 @@ const TransactionForm: React.FC = () => {
       });
       if (response.ok) {
         alert('Transaction added successfully!');
-        setFormData({ date: dayjs().format('YYYY-MM-DD'), amount: '', merchant: '', category: '', description: '' });
+        setFormData(initialFormData);
       } else {
         alert('Failed to add transaction');
       }
@@ -57,6 +71,27 @@ const TransactionForm: React.FC = () => {
           onChange={handleChange}
           fullWidth
         />
+        {accountsLoading ? (
+          <CircularProgress />
+        ) : accountsError ? (
+          <p style={{ color: 'red' }}>{accountsError}</p>
+        ) : (
+          <TextField
+            label="Bank Account"
+            name="account"
+            value={formData.account}
+            onChange={handleChange}
+            select
+            fullWidth
+            required
+          >
+            {accounts.map((account) => (
+              <MenuItem key={account.id} value={account.id}>
+                {account.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
         <TextField
           label="Amount"
           type="number"
@@ -74,10 +109,10 @@ const TransactionForm: React.FC = () => {
           fullWidth
           required
         />
-        {loading ? (
+        {categoriesLoading ? (
           <CircularProgress />
-        ) : error ? (
-          <p style={{ color: 'red' }}>{error}</p>
+        ) : categoriesError ? (
+          <p style={{ color: 'red' }}>{categoriesError}</p>
         ) : (
           <TextField
             label="Category"
@@ -102,7 +137,14 @@ const TransactionForm: React.FC = () => {
           onChange={handleChange}
           fullWidth
         />
-        <Button variant="contained" type="submit" {...{ disabled: (loading || error !== null) }}>
+        <Button variant="contained" type="submit" {...{ 
+            disabled: (
+              categoriesLoading 
+              || accountsLoading 
+              || categoriesError !== null 
+              || accountsError !== null
+            ) 
+          }}>
           Add Transaction
         </Button>
       </Stack>
