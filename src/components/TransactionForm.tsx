@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, MenuItem, Stack, CircularProgress } from '@mui/material';
+import { TextField, Button, MenuItem, Stack, CircularProgress, InputAdornment } from '@mui/material';
 import dayjs from 'dayjs';
 import { useTransactionCategories } from '../hooks/useTransactionCategories';
 import { useAccounts } from '../hooks/useAccounts';
+import AmountRegex from '../utils/AmountRegex';
 
 const TransactionForm: React.FC = () => {
   const { categories, loading: categoriesLoading, error: categoriesError } = useTransactionCategories();
@@ -29,10 +30,23 @@ const TransactionForm: React.FC = () => {
   }, [defaultAccount]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.target.name === 'amount' && !e.target.value.match(AmountRegex)) {
+      return;
+    }
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleBlur = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.target.name === 'amount') {
+      setFormData({
+        ...formData,
+        amount: parseFloat(formData.amount || '0').toFixed(2),
+      });
+    } 
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,12 +108,23 @@ const TransactionForm: React.FC = () => {
         )}
         <TextField
           label="Amount"
-          type="number"
           name="amount"
+          type="text"
           value={formData.amount}
           onChange={handleChange}
+          onBlur={handleBlur}
           fullWidth
           required
+          slotProps={{
+            input: {
+              startAdornment: <span style={{ marginRight: '8px' }}>£</span>,
+              placeholder: '0.00',
+            },
+          }}
+          inputProps={{ // deprecated but works in ios
+            pattern: AmountRegex, //'[0-9]*[.]?[0-9]{2}',
+            inputMode: 'decimal',
+          }}
         />
         <TextField
           label="Merchant"
