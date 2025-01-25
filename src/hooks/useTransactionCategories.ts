@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { fetchTransactionCategories } from '../services/api';
+import TransactionCategory from '../interfaces/TransactionCategory';
 
 export const useTransactionCategories = () => {
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -10,7 +11,7 @@ export const useTransactionCategories = () => {
     const getCategories = async () => {
       try {
         const data = await fetchTransactionCategories();
-        setCategories(data.map((category: { name: string }) => category.name));
+        setCategories(data);
       } catch (err) {
         setError('Error loading categories');
       } finally {

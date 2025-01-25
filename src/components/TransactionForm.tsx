@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, MenuItem, Stack, CircularProgress, InputAdornment } from '@mui/material';
+import { TextField, Button, MenuItem, Stack, CircularProgress } from '@mui/material';
 import dayjs from 'dayjs';
 import { useTransactionCategories } from '../hooks/useTransactionCategories';
 import { useAccounts } from '../hooks/useAccounts';
@@ -11,10 +11,10 @@ const TransactionForm: React.FC = () => {
 
   const initialFormData = {
     date: dayjs().format('YYYY-MM-DD'),
-    account: defaultAccount ? defaultAccount.id : '',
+    accountId: defaultAccount ? defaultAccount.id : '',
     amount: '',
     merchant: '',
-    category: '',
+    transactionCategoryId: '',
     description: '',
   };
 
@@ -24,7 +24,7 @@ const TransactionForm: React.FC = () => {
     if (defaultAccount) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        account: defaultAccount.id.toString(),
+        accountId: defaultAccount.id.toString(),
       }));
     }
   }, [defaultAccount]);
@@ -44,23 +44,32 @@ const TransactionForm: React.FC = () => {
     if (e.target.name === 'amount') {
       setFormData({
         ...formData,
-        amount: parseFloat(formData.amount || '0').toFixed(2),
+        amount: (formData.amount === "" 
+          ? "" 
+          : parseFloat(formData.amount || '0').toFixed(2)
+      ),
       });
     } 
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.amount || !formData.merchant || !formData.category) {
+    if (!formData.accountId || !formData.amount || !formData.merchant || !formData.transactionCategoryId) {
       alert('Please fill all required fields');
       return;
     }
+
+    const formattedData = {
+      ...formData,
+      date: new Date(formData.date).toISOString(),
+      amount: parseFloat(formData.amount),
+    };
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formattedData),
       });
       if (response.ok) {
         alert('Transaction added successfully!');
@@ -75,7 +84,7 @@ const TransactionForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Stack spacing={2}>
         <TextField
           label="Date"
@@ -92,8 +101,8 @@ const TransactionForm: React.FC = () => {
         ) : (
           <TextField
             label="Bank Account"
-            name="account"
-            value={formData.account}
+            name="accountId"
+            value={formData.accountId}
             onChange={handleChange}
             select
             fullWidth
@@ -122,8 +131,9 @@ const TransactionForm: React.FC = () => {
             },
           }}
           inputProps={{ // deprecated but works in ios
-            pattern: AmountRegex, //'[0-9]*[.]?[0-9]{2}',
+            pattern: AmountRegex,
             inputMode: 'decimal',
+            onInvalid: (e) => e.preventDefault(),
           }}
         />
         <TextField
@@ -141,16 +151,16 @@ const TransactionForm: React.FC = () => {
         ) : (
           <TextField
             label="Category"
-            name="category"
-            value={formData.category}
+            name="transactionCategoryId"
+            value={formData.transactionCategoryId}
             onChange={handleChange}
             select
             fullWidth
             required
           >
             {categories.map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                {cat}
+              <MenuItem key={cat.id} value={cat.id}>
+                {cat.name}
               </MenuItem>
             ))}
           </TextField>
@@ -162,7 +172,9 @@ const TransactionForm: React.FC = () => {
           onChange={handleChange}
           fullWidth
         />
-        <Button variant="contained" type="submit" {...{ 
+        <Button variant="contained" type="submit" 
+          onClick={handleSubmit}
+          {...{ 
             disabled: (
               categoriesLoading 
               || accountsLoading 
