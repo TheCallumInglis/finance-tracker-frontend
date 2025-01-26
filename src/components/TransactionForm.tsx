@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, MenuItem, Stack, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { TextField, Button, MenuItem, Stack, CircularProgress, ButtonGroup, Box } from '@mui/material';
 import dayjs from 'dayjs';
 import { useTransactionCategories } from '../hooks/useTransactionCategories';
 import { useAccounts } from '../hooks/useAccounts';
 import AmountRegex from '../utils/AmountRegex';
 
 const TransactionForm: React.FC = () => {
+  const navigate = useNavigate();
+
   const { categories, loading: categoriesLoading, error: categoriesError } = useTransactionCategories();
   const { accounts, defaultAccount, loading: accountsLoading, error: accountsError } = useAccounts();
 
@@ -19,6 +22,10 @@ const TransactionForm: React.FC = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
+
+  const resetForm = () => {
+    setFormData(initialFormData);
+  }
 
   useEffect(() => {
     if (defaultAccount) {
@@ -73,7 +80,7 @@ const TransactionForm: React.FC = () => {
       });
       if (response.ok) {
         alert('Transaction added successfully!');
-        setFormData(initialFormData);
+        resetForm();
       } else {
         alert('Failed to add transaction');
       }
@@ -172,18 +179,26 @@ const TransactionForm: React.FC = () => {
           onChange={handleChange}
           fullWidth
         />
-        <Button variant="contained" type="submit" 
-          onClick={handleSubmit}
-          {...{ 
-            disabled: (
-              categoriesLoading 
-              || accountsLoading 
-              || categoriesError !== null 
-              || accountsError !== null
-            ) 
-          }}>
-          Add Transaction
-        </Button>
+
+        <Box display="flex" justifyContent="right">
+          <ButtonGroup>
+            <Button onClick={() => {resetForm(); navigate('/')}} color="secondary" variant='text'>
+              Cancel
+            </Button>
+            <Button variant="contained" type="submit"  color="primary"
+              onClick={handleSubmit}
+              {...{ 
+                disabled: (
+                  categoriesLoading 
+                  || accountsLoading 
+                  || categoriesError !== null 
+                  || accountsError !== null
+                ) 
+              }}>
+              Add Transaction
+            </Button>
+          </ButtonGroup>
+        </Box>
       </Stack>
     </form>
   );

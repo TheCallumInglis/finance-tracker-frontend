@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import TransactionsPage from './pages/TransactionsPage';
+import AddTransactionsPage from './pages/AddTransactionsPage';
 import DashboardPage from './pages/DashboardPage';
 
 const App: React.FC = () => {
@@ -8,7 +8,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/transactions" element={<TransactionsPage />} />
+        <Route path="/transactions/new" element={<AddTransactionsPage />} />
       </Routes>
     </Router>
   );
