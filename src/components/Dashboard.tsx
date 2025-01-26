@@ -28,10 +28,10 @@ const Dashboard: React.FC = () => {
       </Grid2>
 
       <Grid2 container spacing={2} marginBottom={2}>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard title="Period Budget" value={`£${payPeriod.budget.toFixed(2)}`} />
         </Grid2>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard
             title={isOverBudget ? 'Over Budget' : 'Under Budget'}
             value={
@@ -48,10 +48,10 @@ const Dashboard: React.FC = () => {
             flag={isOverBudget}
           />
         </Grid2>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard title="Daily Budget" value={`£${payPeriod.budgetPerDay.toFixed(2)}`} />
         </Grid2>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard
             title="Days Elapsed"
             value={`${payPeriod.daysElapsed} of ${payPeriod.daysTotal}`}
@@ -60,15 +60,15 @@ const Dashboard: React.FC = () => {
       </Grid2>
 
       <Grid2 container spacing={2} marginBottom={2}>
-        <Grid2 size={{ xs: 12, md: 8 }}>
+        <Grid2 size={{ xs: 12 }}>
           <Typography variant="h6" display={'inline'}>
             Current Spend
           </Typography>
         </Grid2>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard title="Spent to date" value={`£${payPeriod.spendTotal.toFixed(2)}`} />
         </Grid2>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard
             title="Daily Avg."
             value={`£${payPeriod.spendAvgPerDay.toFixed(2)}`}
@@ -76,21 +76,21 @@ const Dashboard: React.FC = () => {
           />
         </Grid2>
 
-        <Grid2 size={{ xs: 12, md: 4 }}>
+        <Grid2 size={{ xs: 12, md: 4, lg: 3 }}>
           <ProgressBar value={payPeriod.spendTotal} maxValue={payPeriod.budget} />
         </Grid2>
       </Grid2>
 
       <Grid2 container spacing={2} marginBottom={2}>
-        <Grid2 size={{ xs: 12, md: 8 }}>
+        <Grid2 size={{ xs: 12 }}>
           <Typography variant="h6" display={'inline'}>
             Remaining Budget
           </Typography>
         </Grid2>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard title="For Period" value={`£${payPeriod.remainingBudget.toFixed(2)}`} />
         </Grid2>
-        <Grid2 size={{ xs: 6, md: 4 }}>
+        <Grid2 size={{ xs: 6, md: 4, lg: 3 }}>
           <SummaryCard
             title="Per Day"
             value={`£${payPeriod.remainingBudgetPerDay.toFixed(2)}`}
