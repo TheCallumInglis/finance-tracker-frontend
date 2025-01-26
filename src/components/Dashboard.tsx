@@ -8,7 +8,8 @@ import { CircularProgress, Typography, Container, Grid2, Button } from '@mui/mat
 import { formatDate } from '../utils/DateUtils';
 
 const Dashboard: React.FC = () => {
-  const { payPeriod, transactions, isOverBudget, loading, error } = useDashboardData();
+  const { payPeriod, transactions, isOverBudget, handleDeleteTransaction, loading, error } =
+    useDashboardData();
   const navigate = useNavigate();
 
   if (loading) return <CircularProgress />;
@@ -117,7 +118,7 @@ const Dashboard: React.FC = () => {
       <Typography variant="h5" marginTop={2}>
         Recent Transactions
       </Typography>
-      <TransactionList transactions={transactions} />
+      <TransactionList transactions={transactions} onDelete={handleDeleteTransaction} />
     </Container>
   );
 };

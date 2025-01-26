@@ -25,6 +25,24 @@ export const useDashboardData = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handleDeleteTransaction = async (id: number) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/transactions/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setTransactions(transactions.filter((transaction) => transaction.id !== id));
+      } else {
+        alert('Failed to delete transaction.');
+      }
+    } catch (err) {
+      console.error('Error deleting transaction:', err);
+      alert('Something went wrong.');
+    }
+  };
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,5 +70,5 @@ export const useDashboardData = () => {
     fetchData();
   }, []);
 
-  return { payPeriod, transactions, isOverBudget, loading, error };
+  return { payPeriod, transactions, isOverBudget, handleDeleteTransaction, loading, error };
 };
